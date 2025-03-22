@@ -1,15 +1,7 @@
 const TelegramBot = require("node-telegram-bot-api");
-const { ethers } = require("ethers");
 
 // Replace with your Telegram bot token
-const bot = new TelegramBot("YOUR_TELEGRAM_BOT_TOKEN", { polling: true });
-
-// Replace with your Base RPC URL
-const provider = new ethers.providers.JsonRpcProvider("https://goerli.base.org");
-
-// Replace with your wallet private key (for sending transactions)
-const privateKey = "YOUR_WALLET_PRIVATE_KEY";
-const wallet = new ethers.Wallet(privateKey, provider);
+const bot = new TelegramBot("7920895132:AAE5dbNTIqFRgCT3PufZGYvHjeScZr69h94", { polling: true });
 
 // Command: /send
 bot.onText(/\/send/, (msg) => {
@@ -25,18 +17,23 @@ bot.onText(/\/send/, (msg) => {
     bot.once("message", async (msg) => {
       const amount = msg.text;
 
-      try {
-        // Step 3: Send the transaction
-        const tx = await wallet.sendTransaction({
-          to: toAddress,
-          value: ethers.utils.parseEther(amount),
-        });
+      // Step 3: Provide instructions for sending the transaction
+      const instructions = `
+To send ${amount} ETH to ${toAddress}, follow these steps:
 
-        // Step 4: Confirm the transaction
-        bot.sendMessage(chatId, `Transaction sent! Tx Hash: ${tx.hash}`);
-      } catch (error) {
-        bot.sendMessage(chatId, "Error sending transaction. Please try again.");
-      }
+1. Open your wallet (e.g., MetaMask).
+2. Send ${amount} ETH to the following address:
+   \`${toAddress}\`
+3. Once the transaction is complete, send the transaction hash (Tx Hash) here.
+      `;
+
+      bot.sendMessage(chatId, instructions, { parse_mode: "Markdown" });
+
+      // Step 4: Wait for the Tx Hash
+      bot.once("message", (msg) => {
+        const txHash = msg.text;
+        bot.sendMessage(chatId, `Transaction confirmed! Tx Hash: \`${txHash}\``, { parse_mode: "Markdown" });
+      });
     });
   });
 });
