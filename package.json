@@ -1,0 +1,13 @@
+{
+  "name": "base-tx-bot",
+  "version": "1.0.0",
+  "description": "A bot that helps you send transactions on the Base blockchain.",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.61.0",
+    "ethers": "^5.7.2"
+  }
+}
